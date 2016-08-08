@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>LastFM - Angular 2</title>
+    <base href="/">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <lastfm-app>Loading...</lastfm-app>
+  
+    <script src="vendor/es6-shim/es6-shim.js"></script>
+    <script src="vendor/reflect-metadata/Reflect.js"></script>
+    <script src="vendor/systemjs/dist/system.src.js"></script>
+    <script src="vendor/zone.js/dist/zone.js"></script>
+    <script>
+        // Quick hack to get a user-entered api_key into the app...
+        System.import('system-config.js')
+            .then(function () {
+                System.import('main')
+                    .then(function(app){
+                        var api_key = 'YOUR_API_KEY'; // REPLACE THIS! See: http://www.last.fm/api
+                        app.startApp(api_key); 
+                    });
+            }).catch(console.error.bind(console));
+
+    </script>
+  
+</body>
+</html>

@@ -1,0 +1,45 @@
+.api-explorer input[type=text]
+{
+    font-size: 0.85rem;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+    /*.api-explorer input.ng-valid[required]*/
+    .api-explorer input[type=text].ng-valid
+    {
+        border-left: 5px solid #42A948;
+        padding-left: 5px;
+    }
+    .api-explorer input[type=text].ng-invalid
+    {
+        border-left: 5px solid #a94442;        
+        padding-left: 5px;
+    }
+
+.help-holder
+{
+    height: 25px;
+    margin-top: -0.75rem;
+    margin-bottom: 5px;
+}
+    .help-holder p
+    {
+        margin-bottom: 5px;
+        margin-top: 0;
+    }
+
+.callout
+{
+    height: 100%;
+}
+
+        .over
+        {
+            overflow: auto;
+            height: 100%;
+        }
+            .over pre
+            {
+                white-space: pre-wrap;
+                word-wrap: break-word; 
+            }

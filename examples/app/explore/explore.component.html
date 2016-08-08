@@ -1,0 +1,12 @@
+<div class="row explore" >
+    <div class="medium-4 columns">
+        <service-input [serviceMethods]='methods' (callService)="apiCall($event)" (changeMethod)="clearView($event)"></service-input>
+    </div>
+    <div class="medium-8 columns">
+        <div class="callout">
+            <div class="over">
+                <pre>{{output | json}}</pre>
+            </div>
+        </div>
+    </div>
+</div>
