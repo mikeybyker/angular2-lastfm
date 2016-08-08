@@ -122,7 +122,7 @@ There is an API explorer in the examples folder - to view the output from each c
 Add your api key and run on a local server.
 
 
-###
+### Note
 For no great reason, the dist folder contains the compiled js (plus .map), and a minified version. You can recreate this output by running
 ```javascript
 npm start
