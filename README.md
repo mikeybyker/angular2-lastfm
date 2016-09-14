@@ -130,6 +130,6 @@ npm start
 But really, you'll be wanting to use the typescript file in the src folder.
 
 ### Version
-0.9.0
+0.10.0
 
 Mike

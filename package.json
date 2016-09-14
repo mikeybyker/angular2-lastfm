@@ -1,6 +1,6 @@
 {
   "name": "angular2-lastfm",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "A Last.fm API service for Angular2",
   "author": "mikeybyker+github@gmail.com",
   "keywords": [
