@@ -9,18 +9,30 @@ Import and include LastFM as a provider, and add your API key as a seperate Last
 ```javascript
 import {LastFM}    from './lastfm/lastfm.service';
 
-@Component({
-    selector: 'your-app',
-    providers:[LastFM, provide('LastFMConfig', {
-        useValue: {
-            api_key: 'YOUR_API_KEY'
+@NgModule({
+    declarations: [
+        AppComponent,
+        // etc.
+    ],
+    imports: [
+        BrowserModule,
+        HttpModule,
+        //etc.
+    ],
+    providers: [
+        LastFM,
+        {
+            provide:   'LastFMConfig',
+            useValue:  {
+                           api_key: 'YOUR_API_KEY'
+                       }
         }
-    })],
-    template: ` <h1>etc.</h1>`
-    // ...
+    ],
+    bootstrap: [AppComponent]
 })
 
 ```
+
 
 Inject into your constructor...
 ```javascript
@@ -130,6 +142,6 @@ npm start
 But really, you'll be wanting to use the typescript file in the src folder.
 
 ### Version
-0.10.0
+1.0.0
 
 Mike
