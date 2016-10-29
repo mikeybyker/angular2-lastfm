@@ -8,18 +8,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 var http_1 = require('@angular/http');
 var core_1 = require('@angular/core');
 var Observable_1 = require('rxjs/Observable');
+var environment_1 = require('../environments/environment');
 require('rxjs/add/operator/map');
 require('rxjs/add/observable/throw');
 require('rxjs/add/operator/catch');
+var index_1 = require('./index');
+exports.Album = index_1.Album;
+exports.Artist = index_1.Artist;
 var LastFM = (function () {
-    function LastFM(config, http) {
-        this.config = config;
+    function LastFM(http) {
         this.http = http;
         this.mbidPattern = /^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$/;
         this.Album = {
@@ -68,10 +68,10 @@ var LastFM = (function () {
             _getTopTags: this._getTrackTopTags.bind(this),
             _search: this._searchTrack.bind(this)
         };
-        config.endPoint || (config.endPoint = 'http://ws.audioscrobbler.com/2.0/');
-        config.format || (config.format = 'json');
+        environment_1.environment.endPoint || (environment_1.environment.endPoint = 'http://ws.audioscrobbler.com/2.0/');
+        environment_1.environment.format || (environment_1.environment.format = 'json');
         var assign = function (common, options, settings) { return Object.assign({}, common, options, settings); };
-        this.assignParams = this.curry(assign, { format: config.format, api_key: config.api_key });
+        this.assignParams = this.curry(assign, { format: environment_1.environment.format, api_key: environment_1.environment.apiKey });
     }
     LastFM.prototype.curry = function (fn) {
         var args1 = [];
@@ -87,7 +87,7 @@ var LastFM = (function () {
         };
     };
     LastFM.prototype.getApiKey = function () {
-        return this.config.api_key;
+        return environment_1.environment.apiKey;
     };
     LastFM.prototype.getSearchParams = function (params) {
         var search = new http_1.URLSearchParams();
@@ -137,9 +137,9 @@ var LastFM = (function () {
         return results.artistmatches.artist
             .some(function (element, index, array) { return element.mbid && element.image.some(hasImage); });
     };
-    /*
-        Check there's an mbid and an image of specified size (default extralarge image source)
-    */
+    /**
+     * Check there's an mbid and an image of specified size (default extralarge image source)
+     */
     LastFM.prototype.checkUsableImage = function (result, size) {
         if (size === void 0) { size = 3; }
         if (result.mbid && result.image && result.image[size] && result.image[size]['#text'] !== '') {
@@ -151,15 +151,15 @@ var LastFM = (function () {
         if (settings === void 0) { settings = {}; }
         if (options === void 0) { options = {}; }
         var updated = this.updateSettings(settings), params = this.createParams(options, updated);
-        return this.http.get(this.config.endPoint, { search: params })
+        return this.http.get(environment_1.environment.endPoint, { search: params })
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
     };
     /**
-    *    @data : received from lastfm
-    *    @path : the path to the required data eg. 'results.artistmatches.artist'
-    *    @empty: what to return if there were no results
-    */
+     * @data : received from lastfm
+     * @path : the path to the required data eg. 'results.artistmatches.artist'
+     * @empty: what to return if there were no results
+     */
     LastFM.prototype.validateData = function (data, path, empty) {
         if (data === void 0) { data = {}; }
         if (path === void 0) { path = ''; }
@@ -188,8 +188,14 @@ var LastFM = (function () {
         if (options === void 0) { options = {}; }
         return this._getAlbumInfo.apply(this, arguments)
             .map(function (data) {
-            return _this.validateData(data, 'album', {});
-        });
+            var validated = _this.validateData(data, 'album', null);
+            if (!validated) {
+                return Observable_1.Observable.throw('Album not found');
+            }
+            return validated;
+        })
+            .filter(function (album) { return !!album.artist; }) // make sure there is album data
+            .map(function (album) { return index_1.Album.fromJSON(album); });
     };
     // Docs: http://www.last.fm/api/show/album.getTopTags
     /*
@@ -227,7 +233,11 @@ var LastFM = (function () {
         if (album === void 0) { album = ''; }
         if (options === void 0) { options = {}; }
         return this._searchAlbum.apply(this, arguments)
-            .map(function (data) { return _this.validateData(data, 'results.albummatches.album'); });
+            .map(function (data) { return _this.validateData(data, 'results.albummatches.album'); })
+            .map(function (albums) {
+            return albums
+                .map(function (album) { return index_1.Album.fromJSON(album); });
+        });
     };
     // End Album
     // Artist
@@ -245,8 +255,13 @@ var LastFM = (function () {
         if (options === void 0) { options = {}; }
         return this._getArtistInfo.apply(this, arguments)
             .map(function (data) {
-            return _this.validateData(data, 'artist', {});
-        });
+            var validated = _this.validateData(data, 'artist', null);
+            if (!validated) {
+                return Observable_1.Observable.throw('Artist not found');
+            }
+            return validated;
+        })
+            .map(function (artist) { return index_1.Artist.fromJSON(artist); });
     };
     // Docs: http://www.last.fm/api/show/artist.getSimilar
     LastFM.prototype._getSimilar = function (artistOrMbid, options) {
@@ -263,6 +278,10 @@ var LastFM = (function () {
         return this._getSimilar.apply(this, arguments)
             .map(function (data) {
             return _this.validateData(data, 'similarartists.artist');
+        })
+            .map(function (artists) {
+            return artists
+                .map(function (artist) { return index_1.Artist.fromJSON(artist); });
         });
     };
     // Docs: http://www.last.fm/api/show/artist.getTopAlbums
@@ -280,6 +299,11 @@ var LastFM = (function () {
         return this._getTopAlbums.apply(this, arguments)
             .map(function (data) {
             return _this.validateData(data, 'topalbums.album');
+        })
+            .map(function (albums) {
+            // albums is an array - *not* of Album objects, just objects...
+            return albums
+                .map(function (album) { return index_1.Album.fromJSON(album); });
         });
     };
     // Docs: http://www.last.fm/api/show/artist.getTopTags
@@ -330,7 +354,12 @@ var LastFM = (function () {
         if (options === void 0) { options = {}; }
         return this._searchArtists.apply(this, arguments)
             .map(function (data) {
-            return _this.validateData(data, 'results.artistmatches.artist');
+            return _this.validateData(data, 'results.artistmatches.artist', []);
+        })
+            .map(function (artists) {
+            return artists
+                .filter(function (artist) { return _this.checkUsableImage(artist); })
+                .map(function (artist) { return index_1.Artist.fromJSON(artist); });
         });
     };
     // End Artist
@@ -349,6 +378,10 @@ var LastFM = (function () {
         return this._getTopArtists.apply(this, arguments)
             .map(function (data) {
             return _this.validateData(data, 'artists.artist');
+        })
+            .map(function (artists) {
+            return artists
+                .map(function (artist) { return index_1.Artist.fromJSON(artist); });
         });
     };
     // Docs: http://www.last.fm/api/show/chart.getTopTags
@@ -400,6 +433,10 @@ var LastFM = (function () {
         return this._getTopGeoArtists.apply(this, arguments)
             .map(function (data) {
             return _this.validateData(data, 'topartists.artist');
+        })
+            .map(function (artists) {
+            return artists
+                .map(function (artist) { return index_1.Artist.fromJSON(artist); });
         });
     };
     // Docs: http://www.last.fm/api/show/geo.getTopTracks
@@ -501,11 +538,9 @@ var LastFM = (function () {
         });
     };
     LastFM = __decorate([
-        core_1.Injectable(),
-        __param(0, core_1.Inject('LastFMConfig')), 
-        __metadata('design:paramtypes', [Object, http_1.Http])
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [http_1.Http])
     ], LastFM);
     return LastFM;
 }());
 exports.LastFM = LastFM;
-//# sourceMappingURL=lastfm.service.js.map

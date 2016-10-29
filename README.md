@@ -4,40 +4,7 @@ An [Angular2](https://angular.io/) LastFm API service. The services covered are 
 
 ### Usage
 
-Import and include LastFM as a provider, and add your API key as a seperate LastFMConfig provider.
-
-```javascript
-import {LastFM}    from './lastfm/lastfm.service';
-
-@NgModule({
-    declarations: [
-        AppComponent,
-        // etc.
-    ],
-    imports: [
-        BrowserModule,
-        HttpModule,
-        //etc.
-    ],
-    providers: [
-        LastFM,
-        {
-            provide:   'LastFMConfig',
-            useValue:  {
-                           api_key: 'YOUR_API_KEY'
-                       }
-        }
-    ],
-    bootstrap: [AppComponent]
-})
-
-```
-
-
-Inject into your constructor...
-```javascript
-constructor(private _lastFM: LastFM) {}
-```
+Add your API key to environments/environment.ts
 
 Each call will return an Observable you can subscribe to.
 
@@ -84,7 +51,7 @@ this._lastFM.Track.getSimilar('e7da35ed-ad25-4721-a3b2-43784fa4f856')
 
 ### Full Response Data
 
-The main methods dig out and return the relevant data from the last.fm response. If you require the full response, append an underscore to the method name.
+The main methods dig out and return the relevant data from the last.fm response. If you require the full, original Last.fm response, append an underscore to the method name.
 
 ```javascript
 // e.g.
@@ -133,15 +100,7 @@ The following methods are available:
 There is an API explorer in the examples folder - to view the output from each call to last.fm.
 Add your api key and run on a local server.
 
-
-### Note
-For no great reason, the dist folder contains the compiled js (plus .map), and a minified version. You can recreate this output by running
-```javascript
-npm start
-```
-But really, you'll be wanting to use the typescript file in the src folder.
-
 ### Version
-1.0.1
+1.1.0
 
 Mike

@@ -3,18 +3,14 @@
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
-    "sourceMap": true,
+    "sourceMap": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,
-    "noImplicitAny": false,
-    "suppressImplicitAnyIndexErrors": true,
-    "outDir": "dist/"
+    "noImplicitAny": false
   },
   "exclude": [
     "node_modules",
-    "examples",
-    "typings/main",
-    "typings/main.d.ts"
+    "examples"
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "angular2-lastfm",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A Last.fm API service for Angular2",
   "author": "mikeybyker+github@gmail.com",
   "keywords": [
@@ -14,21 +14,18 @@
     "url": "https://github.com/mikeybyker/angular2-lastfm.git"
   },
   "scripts": {
-    "start": "npm run tsc && npm run uglify",
-    "postinstall": "typings install",
+    "start": "npm run tsc",
     "tsc": "tsc",
-    "tsc:w": "tsc -w",
-    "typings": "typings",
-    "uglify": "uglifyjs dist/lastfm.service.js -o dist/lastfm.service.min.js"
+    "tsc:w": "tsc -w"
   },
   "license": "ISC",
   "dependencies": {
-    "@angular/common": "~2.1.0",
-    "@angular/compiler": "~2.1.0",
-    "@angular/core": "~2.1.0",
-    "@angular/http": "~2.1.0",
-    "@angular/platform-browser": "~2.1.0",
-    "@angular/platform-browser-dynamic": "~2.1.0",
+    "@angular/common": "~2.1.1",
+    "@angular/compiler": "~2.1.1",
+    "@angular/core": "~2.1.1",
+    "@angular/http": "~2.1.1",
+    "@angular/platform-browser": "~2.1.1",
+    "@angular/platform-browser-dynamic": "~2.1.1",
     "systemjs": "0.19.39",
     "core-js": "^2.4.1",
     "reflect-metadata": "^0.1.8",
@@ -36,9 +33,10 @@
     "zone.js": "^0.6.25"
   },
   "devDependencies": {
+    "@types/core-js": "^0.9.34",
+    "@types/node": "^6.0.45",
     "concurrently": "^3.0.0",
-    "typescript": "^2.0.3",
-    "typings": "^1.4.0",
-    "uglify-js": "^2.7.0"
+    "lite-server": "^2.2.2",
+    "typescript": "^2.0.3"
   }
 }
