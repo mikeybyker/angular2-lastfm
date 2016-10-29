@@ -9,16 +9,12 @@ import {
   Inject
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { environment } from '../environments/environment';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
 
-import { Album, Artist } from './index';
-export { Album, Artist };
-
-export interface LastFMOptions {
+interface LastFMOptions {
   autocorrect?: number,
   lang?: string,
   limit?: number,
@@ -31,17 +27,133 @@ export interface LastFMOptions {
   track?: string
 }
 
+interface LastFMConfig {
+  apiKey: string,
+  endPoint?: string,
+  format?: string
+}
+
+interface AlbumJSON {
+  artist: any;
+  image: Array<any>;
+  listeners: string;
+  mbid: string;
+  name: string;
+  playcount: Number;
+  tags: any;
+  tracks: any;
+  url: string;
+  wiki: any;
+}
+
+// Convert last.fm array for easier use
+const getImages = (image) => {
+  // image is the array of images from last fm
+  // small, medium, large, extralarge, mega
+  // let [small, medium, large, extralarge, mega] = image;
+  // return {
+  //     small,
+  //     medium,
+  //     large,
+  //     extralarge,
+  //     mega,
+  // }
+  let o: any = {};
+  image
+    .filter(o => o['#text'])
+    .forEach((element, index, array) => o[element.size] = element['#text']);
+  return o;
+}
+
+export class Album {
+
+  static fromJSON(json: AlbumJSON): Album {
+    let artist = Object.create(Album.prototype);
+    return Object.assign(artist, json, {
+      image: json.image ? getImages(json.image) : {}
+    });
+  }
+
+  constructor(
+    public image: any = [],        // Gets mutated by getImages
+    public listeners: string = '',
+    public mbid: string = '',
+    public name: string = '',
+    public playcount: string = '',
+    public tags: any = {},
+    public tracks: any = {},
+    public url: string = '',
+    public wiki: any = {}
+  ) {
+    this.image = this.image ? getImages(this.image) : {};
+  }
+
+}
+// The data structure as loaded from last.fm
+interface ArtistJSON {
+  bio: any;
+  image: Array<any>;
+  mbid: string;
+  name: string;
+  listeners: string;
+  ontour: string;
+  similar: any;
+  stats: any;
+  streamable: string;
+  tags: any;
+  url: string;
+}
+
+export class Artist {
+
+  static fromJSON(json: ArtistJSON): Artist {
+    let artist = Object.create(Artist.prototype);
+    return Object.assign(artist, json, {
+      image: json.image ? getImages(json.image) : {},
+      similar: json.similar ? Artist.createSimilarArtists(json.similar) : []
+    });
+  }
+
+  static createSimilarArtists(similar): Array<Artist> {
+    if (!similar || !similar.artist) {
+      return [];
+    }
+    return similar.artist
+      .map((artist: any) => {
+        return Artist.fromJSON(artist);
+      });
+  }
+
+  constructor(
+    public bio: any = {},
+    public image: any = [],            // Gets mutated by getImages
+    public mbid: string = '',
+    public name: string = '',
+    public listeners: string = '',
+    public ontour: string = '',
+    public similar: any = {},          // Gets mutated by createSimilarArtists
+    public stats: any = {},
+    public streamable: string = '',
+    public tags: any = {},
+    public url: string = ''
+  ) {
+    this.image = this.image ? getImages(this.image) : {};
+    this.similar = this.similar ? Artist.createSimilarArtists(this.similar) : [];
+  }
+}
+
+
 @Injectable()
 export class LastFM {
 
   mbidPattern: RegExp = /^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$/;
   assignParams: Function;
 
-  constructor(public http: Http) {
-    environment.endPoint || (environment.endPoint = 'http://ws.audioscrobbler.com/2.0/');
-    environment.format || (environment.format = 'json');
+  constructor( @Inject('LastFMConfig') private config: LastFMConfig, public http: Http) {
+    config.endPoint || (config.endPoint = 'http://ws.audioscrobbler.com/2.0/');
+    config.format || (config.format = 'json');
     const assign = (common, options, settings) => Object.assign({}, common, options, settings);
-    this.assignParams = this.curry(assign, { format: environment.format, api_key: environment.apiKey });
+    this.assignParams = this.curry(assign, { format: config.format, api_key: config.apiKey });
   }
 
   curry(fn, ...args1) {
@@ -49,7 +161,7 @@ export class LastFM {
   }
 
   getApiKey() {
-    return environment.apiKey;
+    return this.config.apiKey;
   }
 
   getSearchParams(params: LastFMOptions): URLSearchParams {
@@ -114,7 +226,7 @@ export class LastFM {
   private _http(settings: LastFMOptions = {}, options: LastFMOptions = {}): Observable<any> {
     const updated: LastFMOptions = this.updateSettings(settings),
       params: URLSearchParams = this.createParams(options, updated);
-    return this.http.get(environment.endPoint, { search: params })
+    return this.http.get(this.config.endPoint, { search: params })
       .map(res => res.json())
       .catch(this.handleError);
   }
