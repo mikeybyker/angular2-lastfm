@@ -4,7 +4,7 @@ An [Angular2](https://angular.io/) LastFm API service. The services covered are 
 
 ### Usage
 
-Import and include LastFM as a provider, and add your API key as a seperate LastFMConfig provider however you prefer.
+Import and include LastFM as a provider, and add your API key as a seperate LastFMConfig provider however you prefer. Using the environment.ts is a good place to do this, else with useValue as below. 
 
 ```javascript
 import {LastFM}    from './lastfm/lastfm.service';
@@ -129,6 +129,6 @@ There is an API explorer in the examples folder - to view the output from each c
 Add your api key and run on a local server.
 
 ### Version
-1.1.0
+1.5.0
 
 Mike
