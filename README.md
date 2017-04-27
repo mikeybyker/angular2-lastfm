@@ -1,6 +1,6 @@
 # Angular2 LastFM
 
-An [Angular2](https://angular.io/) LastFm API service. The services covered are those not requiring authentication. A [Last.FM](http://www.last.fm/api) API Key is required.
+An [Angular](https://angular.io/) LastFm API service. The services covered are those not requiring authentication. A [Last.FM](http://www.last.fm/api) API Key is required.
 
 ### Usage
 
@@ -129,6 +129,6 @@ There is an API explorer in the examples folder - to view the output from each c
 Add your api key and run on a local server.
 
 ### Version
-1.5.0
+1.6.0
 
 Mike
